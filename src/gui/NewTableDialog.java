@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import javax.swing.DefaultComboBoxModel;
 import logic.draw.DBColumn;
 import logic.draw.DBConstraint;
+import logic.draw.DBTable;
 
 /**
  *
@@ -21,10 +22,12 @@ public class NewTableDialog extends javax.swing.JDialog
 
     private ArrayList<DBColumn> columns;
     private DefaultComboBoxModel<DBColumn> jl_model;
+    private DBTable db_table;
     /**
      * Creates new form NewTableDialog
      */
     java.awt.Frame parent_my;
+    private boolean ok;
 
     public NewTableDialog(java.awt.Frame parent, boolean modal)
     {
@@ -218,10 +221,20 @@ public class NewTableDialog extends javax.swing.JDialog
         if(error==0)
         {
             jl_error_message.setText("");
+            db_table = new DBTable(name);
+            int num = jl_model.getSize();
+            for(int i =0;i<num;i++)
+            {
+                db_table.addColumn(jl_model.getElementAt(i));
+            }
+            ok = true;
+            setVisible(false);
+                    
         } 
         else
         {
             jl_error_message.setText("Greska "+error);
+            ok = false;
         }
     }//GEN-LAST:event_jb_createActionPerformed
 
@@ -290,4 +303,14 @@ public class NewTableDialog extends javax.swing.JDialog
     private javax.swing.JLabel jl_error_message;
     private javax.swing.JTextField jtf_ime;
     // End of variables declaration//GEN-END:variables
+
+    boolean isOk()
+    {
+        return ok;
+    }
+
+    DBTable getTable()
+    {
+        return db_table;
+    }
 }

@@ -32,6 +32,7 @@ import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
 import log.Log;
 import logic.connection.mysql.MySqlConnection;
+import logic.draw.DBTable;
 
 /**
  *
@@ -80,6 +81,8 @@ public class MainGui extends javax.swing.JFrame
         jmi_shema = new javax.swing.JMenuItem();
         jmi_teble = new javax.swing.JMenuItem();
         jmi_connection = new javax.swing.JMenuItem();
+
+        jpm_tree_menue.setEnabled(false);
 
         jmi_select.setText("select");
         jmi_select.addActionListener(new java.awt.event.ActionListener()
@@ -288,7 +291,7 @@ public class MainGui extends javax.swing.JFrame
             jmi_close_conection.setEnabled(true);
 
             set_data_tree();
-
+            jpm_tree_menue.setEnabled(true);
             setCursor(Cursor.getDefaultCursor());
         }
     }//GEN-LAST:event_jmi_otvori_konekcijuActionPerformed
@@ -384,6 +387,15 @@ public class MainGui extends javax.swing.JFrame
         NewTableDialog ntd = new NewTableDialog(this,true);
         ntd.setLocation(get_center(ntd.getWidth(), ntd.getHeight(), false));        
         ntd.setVisible(true);
+        if(ntd.isOk())
+        {
+            DBTable dbt = ntd.getTable();
+            String q = dbt.createSQL();
+            
+            sql_exe.set_query_and_exec(q);
+        }
+        ntd.dispose();
+        
     }//GEN-LAST:event_jmi_new_tableActionPerformed
 
     private void clear_tree()

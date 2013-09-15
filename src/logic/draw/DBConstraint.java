@@ -17,7 +17,7 @@ public enum DBConstraint
     CHECK,
     DEFAULT ;
     
-    public String ToString()
+    public String toString()
     {
         String val="";
         switch(this)
