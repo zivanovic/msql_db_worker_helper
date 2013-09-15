@@ -8,10 +8,12 @@ package logic.draw;
  *
  * @author Zoran Zivanovic <zoran86zz at yahoo.com>
  */
-class DBColumn extends DBComponent
+public class DBColumn extends DBComponent
 {
 
     private DBTypes type;
+    private int N;
+    private int M;
     private DBConstraint decoration;
 
     public DBColumn(String name)
@@ -37,5 +39,42 @@ class DBColumn extends DBComponent
     public DBConstraint getDecoration()
     {
         return decoration;
+    }
+
+    public String toString()
+    {
+        String ret = "";
+        ret = getName() + " " + type.writeString();
+        int na = type.num_of_arguments();
+
+        if (na == 1)
+        {
+            ret += "(" + M + ")";
+        } else if (na == 2)
+        {
+            ret += "(" + N + ", " + M + ")";
+        }
+
+        return ret;
+    }
+
+    public void setN(int N)
+    {
+        this.N = N;
+    }
+
+    public void setM(int M)
+    {
+        this.M = M;
+    }
+
+    public int getN()
+    {
+        return N;
+    }
+
+    public int getM()
+    {
+        return M;
     }
 }

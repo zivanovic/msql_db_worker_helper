@@ -4,6 +4,14 @@
  */
 package gui;
 
+import java.awt.Dimension;
+import java.awt.Point;
+import java.awt.Toolkit;
+import java.util.ArrayList;
+import javax.swing.DefaultComboBoxModel;
+import logic.draw.DBColumn;
+import logic.draw.DBConstraint;
+
 /**
  *
  * @author Zoran Zivanovic <zoran86zz at yahoo.com>
@@ -11,14 +19,51 @@ package gui;
 public class NewTableDialog extends javax.swing.JDialog
 {
 
+    private ArrayList<DBColumn> columns;
+    private DefaultComboBoxModel<DBColumn> jl_model;
     /**
      * Creates new form NewTableDialog
      */
+    java.awt.Frame parent_my;
+
     public NewTableDialog(java.awt.Frame parent, boolean modal)
     {
         super(parent, modal);
-        initComponents();
+
+        parent_my = parent;
         setTitle("New table");
+        columns = new ArrayList<>();
+        jl_model = new DefaultComboBoxModel<>();
+
+
+        initComponents();
+    }
+
+    private Point get_center(int w, int h, boolean frame)
+    {
+        Point point = null;
+        double width;
+        double height;
+        if (frame)
+        {
+            Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
+            width = screenSize.getWidth();
+            height = screenSize.getHeight();
+        } else
+        {
+            width = this.getWidth();
+            height = this.getHeight();
+        }
+
+        int with_r = (int) (width / 2 - w / 2);
+        int height_r = (int) (height / 2 - h / 2);
+        if (!frame)
+        {
+            with_r = (int) (with_r + getLocation().getX());
+            height_r = (int) (height_r + getLocation().getY());
+        }
+        point = new Point(with_r, height_r);
+        return point;
     }
 
     /**
@@ -33,51 +78,53 @@ public class NewTableDialog extends javax.swing.JDialog
 
         jLabel1 = new javax.swing.JLabel();
         jtf_ime = new javax.swing.JTextField();
-        jScrollPane1 = new javax.swing.JScrollPane();
-        jTable1 = new javax.swing.JTable();
         jb_new_column = new javax.swing.JButton();
         jLabel2 = new javax.swing.JLabel();
         jb_delete_column = new javax.swing.JButton();
         jb_cancel = new javax.swing.JButton();
         jb_create = new javax.swing.JButton();
+        jScrollPane2 = new javax.swing.JScrollPane();
+        jl_columnes = new javax.swing.JList();
+        jl_error_message = new javax.swing.JLabel();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.DISPOSE_ON_CLOSE);
         setResizable(false);
 
         jLabel1.setText("Ime:");
 
-        jTable1.setModel(new javax.swing.table.DefaultTableModel(
-            new Object [][]
-            {
-
-            },
-            new String []
-            {
-                "Kolona"
-            }
-        )
+        jb_new_column.setText("+");
+        jb_new_column.addActionListener(new java.awt.event.ActionListener()
         {
-            Class[] types = new Class []
+            public void actionPerformed(java.awt.event.ActionEvent evt)
             {
-                java.lang.String.class
-            };
-
-            public Class getColumnClass(int columnIndex)
-            {
-                return types [columnIndex];
+                jb_new_columnActionPerformed(evt);
             }
         });
-        jScrollPane1.setViewportView(jTable1);
-
-        jb_new_column.setText("+");
 
         jLabel2.setText("Kolone:");
 
         jb_delete_column.setText("-");
 
         jb_cancel.setText("cancel");
+        jb_cancel.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jb_cancelActionPerformed(evt);
+            }
+        });
 
         jb_create.setText("Create");
+        jb_create.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jb_createActionPerformed(evt);
+            }
+        });
+
+        jl_columnes.setModel(jl_model);
+        jScrollPane2.setViewportView(jl_columnes);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);
@@ -85,24 +132,27 @@ public class NewTableDialog extends javax.swing.JDialog
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(layout.createSequentialGroup()
                 .addContainerGap()
-                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
+                .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                    .addComponent(jScrollPane2)
+                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
+                        .addComponent(jl_error_message)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                        .addComponent(jb_create)
+                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                        .addComponent(jb_cancel))
                     .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jtf_ime))
-                    .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 502, javax.swing.GroupLayout.PREFERRED_SIZE)
-                    .addGroup(layout.createSequentialGroup()
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jb_new_column)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jb_delete_column)))
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                .addComponent(jb_create)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jb_cancel)
+                        .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel1)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jtf_ime, javax.swing.GroupLayout.PREFERRED_SIZE, 476, javax.swing.GroupLayout.PREFERRED_SIZE))
+                            .addGroup(layout.createSequentialGroup()
+                                .addComponent(jLabel2)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jb_new_column)
+                                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
+                                .addComponent(jb_delete_column)))
+                        .addGap(0, 0, Short.MAX_VALUE)))
                 .addContainerGap())
         );
         layout.setVerticalGroup(
@@ -118,16 +168,62 @@ public class NewTableDialog extends javax.swing.JDialog
                     .addComponent(jLabel2)
                     .addComponent(jb_delete_column))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane1, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 190, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
                     .addComponent(jb_cancel)
-                    .addComponent(jb_create))
+                    .addComponent(jb_create)
+                    .addComponent(jl_error_message))
                 .addContainerGap(javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
         );
 
         pack();
     }// </editor-fold>//GEN-END:initComponents
+
+    private void jb_new_columnActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jb_new_columnActionPerformed
+    {//GEN-HEADEREND:event_jb_new_columnActionPerformed
+        NewColumn nc = new NewColumn(parent_my, true);
+        nc.setLocation(get_center(nc.getWidth(), nc.getHeight(), false));
+        nc.setVisible(true);
+
+        if (nc.isOk())
+        {
+            columns.add(nc.getColumn());
+            jl_model.addElement(nc.getColumn());
+        }
+        nc.dispose();
+    }//GEN-LAST:event_jb_new_columnActionPerformed
+
+    private void jb_cancelActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jb_cancelActionPerformed
+    {//GEN-HEADEREND:event_jb_cancelActionPerformed
+        this.setVisible(false);
+        this.dispose();
+    }//GEN-LAST:event_jb_cancelActionPerformed
+
+    private void jb_createActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jb_createActionPerformed
+    {//GEN-HEADEREND:event_jb_createActionPerformed
+        int error=0;
+        String name = jtf_ime.getText();
+        
+        if(name ==null || (name != null && name.length()==0))
+        {
+            error++;
+        }
+        
+        if(jl_model.getSize()==0)
+        {
+            error++;
+        }
+        
+        if(error==0)
+        {
+            jl_error_message.setText("");
+        } 
+        else
+        {
+            jl_error_message.setText("Greska "+error);
+        }
+    }//GEN-LAST:event_jb_createActionPerformed
 
     /**
      * @param args the command line arguments
@@ -185,12 +281,13 @@ public class NewTableDialog extends javax.swing.JDialog
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
-    private javax.swing.JScrollPane jScrollPane1;
-    private javax.swing.JTable jTable1;
+    private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JButton jb_cancel;
     private javax.swing.JButton jb_create;
     private javax.swing.JButton jb_delete_column;
     private javax.swing.JButton jb_new_column;
+    private javax.swing.JList jl_columnes;
+    private javax.swing.JLabel jl_error_message;
     private javax.swing.JTextField jtf_ime;
     // End of variables declaration//GEN-END:variables
 }

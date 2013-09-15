@@ -39,7 +39,7 @@ public enum DBTypes
     TINYBLOB, TINYTEXT,
     MEDIUMBLOB, MEDIUMTEXT,
     LONGBLOB, LONGTEXT,
-    ENUM;
+    ENUM;  
 
     @Override
     public String toString()
@@ -63,14 +63,14 @@ public enum DBTypes
             case BIGINT:
                 val = "BIGINT";
                 break;
-            case FLOAT:
-                val = "FLOAT";
+            case FLOAT:               
+                val = "FLOAT(N,M)";
                 break;
             case DOUBLE:
-                val = "DOUBLE";
+                val = "DOUBLE(N,M)";
                 break;
             case DECIMAL:
-                val = "DECIMAL";
+                val = "DECIMAL(N,M)";
                 break;
             case DATE:
                 val = "DATE";
@@ -85,13 +85,13 @@ public enum DBTypes
                 val = "TIME";
                 break;
             case YEAR:
-                val = "YEAR";
+                val = "YEAR(M)";
                 break;
             case CHAR:
-                val = "CHAR";
+                val = "CHAR(M)";                
                 break;
             case VARCHAR:
-                val = "VARCHAR";
+                val = "VARCHAR(M)";                                                                                                                                                                                                                                                            
                 break;
             case BLOB:
                 val = "BLOB";
@@ -124,6 +124,89 @@ public enum DBTypes
         return val;
 
     }
+     public String writeString()
+    {
+
+        String val = "";
+        switch (this)
+        {
+            case INT:
+                val = "INT";
+                break;
+            case TINYINT:
+                val = "TINYINT";
+                break;
+            case SMALLINT:
+                val = "SMALLINT";
+                break;
+            case MEDIUMINT:
+                val = "MEDIUMINT";
+                break;
+            case BIGINT:
+                val = "BIGINT";
+                break;
+            case FLOAT:               
+                val = "FLOAT";
+                break;
+            case DOUBLE:
+                val = "DOUBLE";
+                break;
+            case DECIMAL:
+                val = "DECIMAL";
+                break;
+            case DATE:
+                val = "DATE";
+                break;
+            case DATETIME:
+                val = "DATETIME";
+                break;
+            case TIMESTAMP:
+                val = "TIMESTAMP";
+                break;
+            case TIME:
+                val = "TIME";
+                break;
+            case YEAR:
+                val = "YEAR";
+                break;
+            case CHAR:
+                val = "CHAR";                
+                break;
+            case VARCHAR:
+                val = "VARCHAR";                                                                                                                                                                                                                                                            
+                break;
+            case BLOB:
+                val = "BLOB";
+                break;
+            case TEXT:
+                val = "TEXT";
+                break;
+            case TINYBLOB:
+                val = "TINYBLOB";
+                break;
+            case TINYTEXT:
+                val = "TINYTEXT";
+                break;
+            case MEDIUMBLOB:
+                val = "MEDIUMBLOB";
+                break;
+            case MEDIUMTEXT:
+                val = "MEDIUMTEXT";
+                break;
+            case LONGBLOB:
+                val = "LONGBLOB";
+                break;
+            case LONGTEXT:
+                val = "LONGTEXT";
+                break;
+            case ENUM:
+                val = "ENUM";
+                break;
+        }
+        return val;
+
+    }
+
 
     public int num_of_arguments()
     {
