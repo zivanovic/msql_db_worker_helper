@@ -96,7 +96,7 @@ public class MainGui extends javax.swing.JFrame
         });
         jpm_tree_menue.add(jmi_select);
 
-        jmi_delete_selected_table.setText("delete");
+        jmi_delete_selected_table.setText("delete table");
         jmi_delete_selected_table.addActionListener(new java.awt.event.ActionListener()
         {
             public void actionPerformed(java.awt.event.ActionEvent evt)
@@ -117,6 +117,13 @@ public class MainGui extends javax.swing.JFrame
         jpm_tree_menue.add(jmi_new_table);
 
         jmi_new_shema.setText("new Shema");
+        jmi_new_shema.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jmi_new_shemaActionPerformed(evt);
+            }
+        });
         jpm_tree_menue.add(jmi_new_shema);
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
@@ -459,6 +466,14 @@ public class MainGui extends javax.swing.JFrame
 
 
     }//GEN-LAST:event_jmi_delete_selected_tableActionPerformed
+
+    private void jmi_new_shemaActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmi_new_shemaActionPerformed
+    {//GEN-HEADEREND:event_jmi_new_shemaActionPerformed
+        NewShema ns = new NewShema(this, false);
+        ns.setLocation(get_center(ns.getWidth(),ns.getHeight(), false));
+        ns.setVisible(true);
+        
+    }//GEN-LAST:event_jmi_new_shemaActionPerformed
 
     private void clear_tree()
     {

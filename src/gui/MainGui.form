@@ -21,7 +21,7 @@
         </MenuItem>
         <MenuItem class="javax.swing.JMenuItem" name="jmi_delete_selected_table">
           <Properties>
-            <Property name="text" type="java.lang.String" value="delete"/>
+            <Property name="text" type="java.lang.String" value="delete table"/>
           </Properties>
           <Events>
             <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmi_delete_selected_tableActionPerformed"/>
@@ -39,6 +39,9 @@
           <Properties>
             <Property name="text" type="java.lang.String" value="new Shema"/>
           </Properties>
+          <Events>
+            <EventHandler event="actionPerformed" listener="java.awt.event.ActionListener" parameters="java.awt.event.ActionEvent" handler="jmi_new_shemaActionPerformed"/>
+          </Events>
         </MenuItem>
       </SubComponents>
     </Container>
