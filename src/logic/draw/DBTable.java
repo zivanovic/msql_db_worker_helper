@@ -46,13 +46,13 @@ public class DBTable extends DBComponent
             if(columns.get(i)!=null)
             {
                DBColumn col = columns.get(i);
-               q+=col.createSQL()+" ";
+               q+=col.createSQL();
             }
         }
         q = q.substring(0, q.length()-1);
         q+=")";
         Log.logd(q);
-        //return q;        
-        return "";
+        return q;        
+       
     }
 }

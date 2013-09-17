@@ -30,8 +30,10 @@ import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreeCellRenderer;
 import javax.swing.tree.TreePath;
+import javax.swing.tree.TreeSelectionModel;
 import log.Log;
 import logic.connection.mysql.MySqlConnection;
+import logic.draw.DBShema;
 import logic.draw.DBTable;
 
 /**
@@ -63,7 +65,7 @@ public class MainGui extends javax.swing.JFrame
 
         jpm_tree_menue = new javax.swing.JPopupMenu();
         jmi_select = new javax.swing.JMenuItem();
-        jmi_delete = new javax.swing.JMenuItem();
+        jmi_delete_selected_table = new javax.swing.JMenuItem();
         jmi_new_table = new javax.swing.JMenuItem();
         jmi_new_shema = new javax.swing.JMenuItem();
         jsp_split_panel = new javax.swing.JSplitPane();
@@ -94,8 +96,15 @@ public class MainGui extends javax.swing.JFrame
         });
         jpm_tree_menue.add(jmi_select);
 
-        jmi_delete.setText("delete");
-        jpm_tree_menue.add(jmi_delete);
+        jmi_delete_selected_table.setText("delete");
+        jmi_delete_selected_table.addActionListener(new java.awt.event.ActionListener()
+        {
+            public void actionPerformed(java.awt.event.ActionEvent evt)
+            {
+                jmi_delete_selected_tableActionPerformed(evt);
+            }
+        });
+        jpm_tree_menue.add(jmi_delete_selected_table);
 
         jmi_new_table.setText("new table");
         jmi_new_table.addActionListener(new java.awt.event.ActionListener()
@@ -357,10 +366,10 @@ public class MainGui extends javax.swing.JFrame
                     q += tp.getPathComponent(i).toString();
                 }
             }
-           
+
         } else
         {
-             for (int i = 0; i < 2; i++)
+            for (int i = 0; i < 2; i++)
             {
                 if (i == 0)
                 {
@@ -371,8 +380,10 @@ public class MainGui extends javax.swing.JFrame
                 }
             }
         }
-         if(sql_exe != null)
-                sql_exe.set_query_and_exec(q);
+        if (sql_exe != null)
+        {
+            sql_exe.set_query_and_exec(q);
+        }
 
     }//GEN-LAST:event_jmi_selectActionPerformed
 
@@ -384,19 +395,70 @@ public class MainGui extends javax.swing.JFrame
 
     private void jmi_new_tableActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmi_new_tableActionPerformed
     {//GEN-HEADEREND:event_jmi_new_tableActionPerformed
-        NewTableDialog ntd = new NewTableDialog(this,true);
-        ntd.setLocation(get_center(ntd.getWidth(), ntd.getHeight(), false));        
+        NewTableDialog ntd = new NewTableDialog(this, true);
+        ntd.setLocation(get_center(ntd.getWidth(), ntd.getHeight(), false));
         ntd.setVisible(true);
-        if(ntd.isOk())
+        if (ntd.isOk())
         {
             DBTable dbt = ntd.getTable();
             String q = dbt.createSQL();
-            
+
             sql_exe.set_query_and_exec(q);
+            set_data_tree();
         }
         ntd.dispose();
-        
+
     }//GEN-LAST:event_jmi_new_tableActionPerformed
+
+    private void jmi_delete_selected_tableActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_jmi_delete_selected_tableActionPerformed
+    {//GEN-HEADEREND:event_jmi_delete_selected_tableActionPerformed
+        // TODO add your handling code here:
+
+        TreePath selecktovana_putanja = jt_database_table_list.getSelectionPath();
+        Log.logd(selecktovana_putanja.getPath()[0].getClass().getName());
+        int velicina = selecktovana_putanja.getPathCount();
+        DefaultMutableTreeNode dtn = (DefaultMutableTreeNode) selecktovana_putanja.getPathComponent(velicina - 1);
+        Log.logd(dtn.toString());
+        if (dtn.getUserObject().getClass().getName().equals(DBTable.class.getName()))
+        {
+            //delete table
+            DefaultMutableTreeNode dtn_shem = (DefaultMutableTreeNode) selecktovana_putanja.getPathComponent(velicina - 2);
+            DBShema dbs = (DBShema) dtn_shem.getUserObject();
+            DBTable dbt = (DBTable) dtn.getUserObject();
+            Object[] options =
+            {
+                "Da",
+                "Ne"
+            };
+            int n = JOptionPane.showOptionDialog(this,
+                    "Da li ste sigurni da zelite da obrisete tabelu " + dbt.getName() + "?",
+                    "Potvrda",
+                    JOptionPane.YES_NO_CANCEL_OPTION,
+                    JOptionPane.QUESTION_MESSAGE,
+                    null,
+                    options,
+                    options[1]);
+            
+            if(n==0)
+            {
+                sql_exe.set_query_and_exec("DROP TABLE "+dbs.getName()+"."+dbt.getName());
+                set_data_tree();
+            }
+
+        } else if (dtn.getUserObject().getClass().getName().equals(DBShema.class.getName()))
+        {
+            //delete shema
+        }
+
+
+
+//        for(DefaultMutableTreeNode s:val)
+//        {
+//            Log.logd(s.toString());
+//        }
+
+
+    }//GEN-LAST:event_jmi_delete_selected_tableActionPerformed
 
     private void clear_tree()
     {
@@ -404,6 +466,7 @@ public class MainGui extends javax.swing.JFrame
         DefaultTreeModel treeModel = new DefaultTreeModel(root);
 
         jt_database_table_list.setModel(treeModel);
+        jt_database_table_list.getSelectionModel().setSelectionMode(TreeSelectionModel.SINGLE_TREE_SELECTION);
         jt_database_table_list.revalidate();
         jt_database_table_list.getParent().repaint();
         jt_database_table_list.setComponentPopupMenu(jpm_tree_menue);
@@ -450,7 +513,8 @@ public class MainGui extends javax.swing.JFrame
                 while (rs.next())
                 {
                     Log.logd("TABLE_CAT = " + rs.getString("TABLE_CAT"));
-                    DefaultMutableTreeNode _DataBase = new DefaultMutableTreeNode(rs.getString("TABLE_CAT"));
+                    DBShema dbs = new DBShema(rs.getString("TABLE_CAT"));
+                    DefaultMutableTreeNode _DataBase = new DefaultMutableTreeNode(dbs);
                     root.add(_DataBase);
                     tnvshame.add(_DataBase);
                     vshame.add(rs.getString("TABLE_CAT"));
@@ -475,7 +539,8 @@ public class MainGui extends javax.swing.JFrame
             mysql_connection.connect();
         } else
         {
-            root = new DefaultMutableTreeNode(mysql_connection.getDatabaseName());
+            DBShema dbs = new DBShema(mysql_connection.getDatabaseName());
+            root = new DefaultMutableTreeNode(dbs);
             mysql_connection.disconnect();
             add_tables(root, null);
             mysql_connection.connect();
@@ -510,7 +575,8 @@ public class MainGui extends javax.swing.JFrame
             tables = m.getTables(null, null, "%", null);
             while (tables.next())
             {
-                DefaultMutableTreeNode _DataBase = new DefaultMutableTreeNode(tables.getString(3));
+                DBTable dbt = new DBTable(tables.getString(3));
+                DefaultMutableTreeNode _DataBase = new DefaultMutableTreeNode(dbt);
                 root_table.add(_DataBase);
             }
 
@@ -583,7 +649,7 @@ public class MainGui extends javax.swing.JFrame
     private javax.swing.JMenuBar jmb_menu;
     private javax.swing.JMenuItem jmi_close_conection;
     private javax.swing.JMenuItem jmi_connection;
-    private javax.swing.JMenuItem jmi_delete;
+    private javax.swing.JMenuItem jmi_delete_selected_table;
     private javax.swing.JMenuItem jmi_dizajn;
     private javax.swing.JMenuItem jmi_new_shema;
     private javax.swing.JMenuItem jmi_new_table;
